@@ -25,6 +25,7 @@ export default function Login() {
         `${window.SERVER_IP}/users/login`,
         values
       );
+      console.log(response.data)
 
       if (response.status === 200) {
         localStorage.setItem("userData", JSON.stringify(response.data.token));

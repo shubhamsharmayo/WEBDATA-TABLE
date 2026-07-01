@@ -243,13 +243,7 @@ const CorrectionField = ({
             type="text"
             className="w-full border rounded-xl py-1 px-2 shadow"
             // value={inputValue[key] ?inputValue[key]:dataItem?.Corrected}
-            value={
-              inputValue[key] !== undefined
-                ? inputValue[key]
-                : dataItem?.Corrected
-                  ? dataItem?.Corrected
-                  : ""
-            }
+           value={inputValue[key] ?? dataItem?.Corrected ?? dataItem?.File_1_data}
             placeholder={dataItem?.Column_Name}
             onChange={(e) => {
               const input = e.target.value.toUpperCase(); // Convert input to uppercase

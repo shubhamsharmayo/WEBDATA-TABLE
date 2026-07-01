@@ -194,6 +194,8 @@ export default function Navbar() {
       }
     });
 
+    console.log(filteredMenuItems)
+
 
   return (
     <>

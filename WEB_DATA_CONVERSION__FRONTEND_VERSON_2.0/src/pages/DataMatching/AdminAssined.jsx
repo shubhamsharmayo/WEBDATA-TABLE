@@ -46,6 +46,7 @@ const AdminAssined = () => {
         const comTask = AssignedData.filter((task) => {
           return task.moduleType === "CSV Compare";
         });
+        console.log(comTask)
 
         // const updatedCompareTasks = comTask.map((task) => {
         //   const matchedTemplate = templateData.find(
@@ -80,6 +81,8 @@ const AdminAssined = () => {
     };
     fetchCurrentUser();
   }, []);
+
+   console.log(compareTask)
 
   useEffect(() => {
     const onFetchTasksData = async () => {

@@ -40,6 +40,8 @@ const CsvUploader = () => {
   const data = allTemplates?.find((item) => item.id === selectedId);
   localStorage.setItem("editModel", editModal);
 
+  console.log(data)
+
   // Tab Button disabled
   useEffect(() => {
     const handleKeyDown = (event) => {

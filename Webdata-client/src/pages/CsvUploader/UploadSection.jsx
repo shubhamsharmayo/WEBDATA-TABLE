@@ -84,7 +84,7 @@ const UploadSection = ({
                       ? "text-blue-700 font-semibold text-lg hover:text-xl"
                       : "text-black hover:text-teal-700 text-md font-medium"
                   }`}
-                >
+                >{console.log(template)}
                   {template.name}
                 </span>
                 <CiEdit
