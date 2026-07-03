@@ -2,10 +2,11 @@ const Files = require("../../models/TempleteModel/files");
 const XLSX = require("xlsx");
 const fs = require("fs");
 const path = require("path");
+const csv = require('csv-parser')
 
 const getCsvHeaderByTemplate = async (req, res, next) => {
     const { template_id } = req.params;
-
+    // console.log(req)
     const userRole = req.role;
 
     if (userRole != "Admin") {
@@ -16,6 +17,7 @@ const getCsvHeaderByTemplate = async (req, res, next) => {
 
     try {
         const fileData = await Files.findOne({ where: { templeteId: template_id } });
+        // console.log(fileData)
 
         if (!fileData) {
             return res.status(200).json({ error: "File not found", data: [] });
@@ -23,18 +25,32 @@ const getCsvHeaderByTemplate = async (req, res, next) => {
 
         const fileName = fileData.csvFile;
         const filePath = path.join(__dirname, "../../csvFile", fileName);
+        console.log(filePath)
 
         if (!fs.existsSync(filePath)) {
             return res.status(404).json({ error: "File not found on given filepath" });
         }
 
-        const workbook = XLSX.readFile(filePath);
-        const sheetName = workbook.SheetNames[0];
-        const worksheet = workbook.Sheets[sheetName];
-        const data = XLSX.utils.sheet_to_json(worksheet, {
-            raw: true,
-            defval: "",
+        // const workbook = XLSX.readFile(filePath);
+        // const sheetName = workbook.SheetNames[0];
+        // const worksheet = workbook.Sheets[sheetName];
+        // const data = XLSX.utils.sheet_to_json(worksheet, {
+        //     raw: true,
+        //     defval: "",
+        // });
+        const data = [];
+
+        await new Promise((resolve, reject) => {
+            fs.createReadStream(filePath)
+                .pipe(csv())
+                .on("data", (row) => {
+                    data.push(row);
+                })
+                .on("end", resolve)
+                .on("error", reject);
         });
+
+        console.log(data)
 
         if (data.length === 0) {
             return res.status(404).json({ error: "No content found in excel sheet", data: [] });
@@ -43,7 +59,7 @@ const getCsvHeaderByTemplate = async (req, res, next) => {
         // Extract headers from the first row and trim spaces
         let headers = Object.keys(data[0]).map(header => header.trim());
         // console.log(headers)
-            // console.log(headers)
+        // console.log(headers)
         // Columns to remove
         const columnsToRemove = [
             "User Details",
