@@ -124,6 +124,8 @@ const UserTaskAssined = () => {
         }
       );
 
+      console.log(response)
+
       if (response.data.length === 1) {
         toast.warning("No matching data was found.");
         return;

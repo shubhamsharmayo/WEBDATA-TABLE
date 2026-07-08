@@ -50,7 +50,7 @@ const getCsvHeaderByTemplate = async (req, res, next) => {
                 .on("error", reject);
         });
 
-        console.log(data)
+        // console.log(data)
 
         if (data.length === 0) {
             return res.status(404).json({ error: "No content found in excel sheet", data: [] });

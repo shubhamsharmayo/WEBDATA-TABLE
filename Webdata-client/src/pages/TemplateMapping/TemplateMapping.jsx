@@ -52,7 +52,9 @@ const TemplateMapping = () => {
       setCsvHeaders(response.headers);
     }
     fetchData();
-  }, []); // useEffect(() => {
+  }, []); 
+  console.log(csvHeaders)
+  // useEffect(() => {
   //   const fetchData = async () => {
   //     try {
   //       const response = await axios.get(

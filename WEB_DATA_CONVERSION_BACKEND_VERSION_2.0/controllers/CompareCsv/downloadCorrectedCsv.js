@@ -41,18 +41,22 @@ const DownloadCorrectedCsv = async (req, res) => {
     // console.log(csvTableName)
 
     const data = await sequelize.query(
-      `SELECT ${csvTableName}.*, errortables.Corrected, errortables.CorrectedBy, CASE 
-        WHEN errortables.Need_Checking = 1 THEN 'Yes'
-        ELSE 'No'
-    END AS Need_Checking 
-      FROM ${csvTableName}
-      JOIN errortables
-      WHERE ${csvTableName}.id = errortables.parentId AND 
-      ${csvTableName}.id >= ${startIndex} AND 
-      ${fileId}=errortables.fileId`,
+      `SELECT
+      ${csvTableName}.*,
+      errortables.Corrected,
+      errortables.CorrectedBy,
+      CASE
+          WHEN errortables.Need_Checking = 1 THEN 'Yes'
+          ELSE 'No'
+      END AS Need_Checking
+   FROM ${csvTableName}
+   LEFT JOIN errortables
+     ON ${csvTableName}.id = errortables.parentId
+    AND errortables.fileId = ${fileId}
+   WHERE ${csvTableName}.id >= ${startIndex}`,
       {
         type: QueryTypes.SELECT,
-      },
+      }
     );
     // const data = await sequelize.query(
     //   `SELECT * FROM ${csvTableName} WHERE id >= ${startIndex}`,

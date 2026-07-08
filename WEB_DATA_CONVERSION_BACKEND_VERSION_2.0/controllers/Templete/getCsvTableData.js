@@ -124,19 +124,26 @@ const getCsvTableData = async (req, res) => {
         .map((meta) => meta.attribute)
     );
 
+    // console.log(formFieldValues)
+
     const questionFieldValues = new Set(
       metaData
         .filter((meta) => meta.fieldType === "questionsField")
         .map((meta) => meta.attribute)
     );
 
+    // console.log(questionFieldValues)
+
     const FormCol = columns
       .filter((col) => formFieldValues.has(col.value))
       .map((col) => col.key);
+      // console.log(FormCol)
 
     const QuestionCol = columns
       .filter((col) => questionFieldValues.has(col.value))
       .map((col) => col.key);
+
+      // console.log(QuestionCol)
 
     if (!columns.length) {
       return res
@@ -175,6 +182,8 @@ const getCsvTableData = async (req, res) => {
           replacements: { parentId },
           type: sequelize.QueryTypes.SELECT, // Ensures SELECT query type
         });
+
+        // console.log(resultTwo)
         const imageName = resultTwo[imageColName];
         const baseName = path.basename(imageName);
         // console.log(baseName);
@@ -214,6 +223,7 @@ const getCsvTableData = async (req, res) => {
     }
 
     const columnNames = columns.map((col) => `\`${col.key}\``);
+    // console.log(columnNames)
     const startingCsvIndex = fileName.startIndex;
 
     // const conditions = columnNames
@@ -256,7 +266,10 @@ const getCsvTableData = async (req, res) => {
 
     const updatedFilteredData = filteredData.map(({ id }) => ({
       parentId: id,
+      
     }));
+
+    // console.log('updatedFilteredData',updatedFilteredData)
     const assignedTableName = await processAndInsertCSV(updatedFilteredData);
     assignedData.tableName = assignedTableName.tableName;
     await assignedData.save();

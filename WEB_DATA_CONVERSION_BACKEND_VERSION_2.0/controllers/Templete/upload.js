@@ -505,6 +505,8 @@ const handleUpload = async (req, res) => {
           `${timestamp}_${zipFileName}`
         );
 
+        console.log('finalFilePath',finalFilePath)
+
         await extractZipFile(finalFilePath, destinationFolderPath);
 
         // Step 8: Process the extracted files and CSV

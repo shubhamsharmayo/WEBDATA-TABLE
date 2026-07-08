@@ -110,6 +110,7 @@ const DataMapping = () => {
         if (fetchId !== fetchIdRef.current) return;
 
         tempdata.current = response.data;
+        
         setData(response.data);
       } catch (err) {
         if (controller.signal.aborted) return;
@@ -124,6 +125,8 @@ const DataMapping = () => {
     fetchData();
     return () => controller.abort();
   }, [currentIndex]);
+
+  console.log(data)
 
   useEffect(() => {
     setFormData(Array.isArray(data.formdata) ? data.formdata : [data.formdata]);

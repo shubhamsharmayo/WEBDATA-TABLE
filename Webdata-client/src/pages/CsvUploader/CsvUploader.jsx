@@ -97,6 +97,8 @@ const CsvUploader = () => {
     });
   };
 
+  console.log(imageNames)
+
   const onImageFolderHandler = (event) => {
     const fileInput = event.target.files[0];
     console.log(fileInput);
