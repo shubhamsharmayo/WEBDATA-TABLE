@@ -126,7 +126,7 @@ const DataMapping = () => {
     return () => controller.abort();
   }, [currentIndex]);
 
-  console.log(data)
+  console.log(tempdata)
 
   useEffect(() => {
     setFormData(Array.isArray(data.formdata) ? data.formdata : [data.formdata]);
@@ -272,6 +272,7 @@ const DataMapping = () => {
   };
   // console.log(tempdata.current);
   const saveHandler = async (updatedData) => {
+    // console.log(updatedData)
     //   const hasInvalid = Object.values(invalidMap).some(v => v === true);
 
     // if (hasInvalid) {

@@ -57,7 +57,7 @@ const DownloadCorrectedCsv = async (req, res) => {
       {
         type: QueryTypes.SELECT,
       }
-    );
+    )
     // const data = await sequelize.query(
     //   `SELECT * FROM ${csvTableName} WHERE id >= ${startIndex}`,
     //   {

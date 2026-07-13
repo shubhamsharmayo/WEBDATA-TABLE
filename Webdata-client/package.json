@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host",
     "set-ip": "node set-ip.cjs",
     "build": "node set-ip.cjs && vite build",
     "lint": "eslint .",

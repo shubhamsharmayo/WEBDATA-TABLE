@@ -253,27 +253,55 @@ const UserCorrectionData = () => {
 
   console.log(currentIndex)
 
+
+  const fetchIdRef = useRef(0);
+
   useEffect(() => {
-    setLoading(true);
+    const controller = new AbortController();
+    const fetchId = ++fetchIdRef.current;
+
     const req = async () => {
-      const response = await axios.post(
-        `${window.SERVER_IP}/getCompareCsvData/${taskId}`,
-        { currentIndex },
-        {
-          headers: {
-            token: token,
-          },
+      try {
+        setLoading(true);
+
+        const response = await axios.post(
+          `${window.SERVER_IP}/getCompareCsvData/${taskId}`,
+          { currentIndex },
+          {
+            headers: {
+              token,
+            },
+            signal: controller.signal,
+          }
+        );
+
+        // Ignore outdated responses
+        if (fetchId !== fetchIdRef.current) return;
+
+        setNeedChecking(response?.data?.mainData?.Need_Checking !== 0);
+        console.log(response?.data);
+
+        setCurrentData(response?.data?.mainData);
+        setSubData(response?.data?.subData);
+        setTotalData(response?.data?.errorCount);
+        setCurrIndex(response?.data?.currentIndex);
+      } catch (err) {
+        // Ignore aborted requests
+        if (controller.signal.aborted) return;
+
+        console.error(err);
+        // toast.error(err.message); // if you use react-toastify
+      } finally {
+        if (fetchId === fetchIdRef.current) {
+          setLoading(false);
         }
-      );
-      setNeedChecking(response?.data?.mainData?.Need_Checking==0?false:true)
-      console.log(response?.data)
-      setCurrentData(response?.data?.mainData);
-      setSubData(response?.data?.subData);
-      setTotalData(response?.data?.errorCount);
-      setCurrIndex(response?.data?.currentIndex);
+      }
     };
+
     req();
-  }, [currentIndex, currIndex]);
+
+    return () => controller.abort();
+  }, [currentIndex, currIndex, taskId, token]);
   console.log(currIndex)
   // const onCsvUpdateHandler = async () => {
   //   if (!modifiedKeys) {
@@ -582,13 +610,13 @@ const UserCorrectionData = () => {
 
     // Calculate the zoom level based on the container size and the selected area size
     // ✅ Calculate zoom
-  const calculatedZoom = Math.min(
-    containerWidth / width,
-    containerHeight / height
-  );
+    const calculatedZoom = Math.min(
+      containerWidth / width,
+      containerHeight / height
+    );
 
-  // ✅ Prevent zoom-out
-  const zoomLevel = Math.max(1, calculatedZoom);
+    // ✅ Prevent zoom-out
+    const zoomLevel = Math.max(1, calculatedZoom);
 
     // Calculate the scroll position to center the selected area
     const scrollX =
@@ -687,13 +715,13 @@ const UserCorrectionData = () => {
     setCurrIndex(response?.updatedIndex);
   };
 
-// console.log(currentData?.Need_Checking)
+  // console.log(currentData?.Need_Checking)
   useEffect(() => {
-    
-  
-    
+
+
+
   }, [currIndex])
-  
+
   return (
     <>
       {!popUp && (
@@ -703,15 +731,15 @@ const UserCorrectionData = () => {
             <CSVFormDataSection
               formCsvData={formData}
 
-              // csvData={csvData}
-              // filterResults={filterResults}
-              // templateHeaders={templateHeaders}
-              // imageColName={imageColName}
-              // currentFocusIndex={currentFocusIndex}
-              // inputRefs={inputRefs}
-              // handleKeyDownJump={handleKeyDownJump}
-              // changeCurrentCsvDataHandler={changeCurrentCsvDataHandler}
-              // imageFocusHandler={imageFocusHandler}
+            // csvData={csvData}
+            // filterResults={filterResults}
+            // templateHeaders={templateHeaders}
+            // imageColName={imageColName}
+            // currentFocusIndex={currentFocusIndex}
+            // inputRefs={inputRefs}
+            // handleKeyDownJump={handleKeyDownJump}
+            // changeCurrentCsvDataHandler={changeCurrentCsvDataHandler}
+            // imageFocusHandler={imageFocusHandler}
             />
           )}
 
@@ -807,6 +835,7 @@ const UserCorrectionData = () => {
                       currIndex={currIndex}
                       setNeedChecking={setNeedChecking}
                       needChecking={needChecking}
+                      loading={loading}
                       // csvData={csvData}
                       // tableData={tableData}
                       // currentData={currentData}

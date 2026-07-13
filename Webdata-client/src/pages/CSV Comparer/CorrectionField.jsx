@@ -18,6 +18,7 @@ const CorrectionField = ({
   imageFocusHandler,
   setNeedChecking,
   needChecking,
+  loading
 }) => {
   const taskData = JSON.parse(localStorage.getItem("taskdata"));
   const token = JSON.parse(localStorage.getItem("userData"));
@@ -31,7 +32,7 @@ const CorrectionField = ({
   const isUpdatingRef = useRef(false);
 
 
-  
+
   useEffect(() => {
     setDataRow(currentData);
     setInputValue({});
@@ -40,7 +41,7 @@ const CorrectionField = ({
     setVisitedCount(0);
     setVisitedRows({});
   }, [currentData]);
-  
+
   const handleVisit = (index) => {
     if (!visitedRows[index]) {
       setVisitedRows((prev) => ({ ...prev, [index]: true }));
@@ -49,16 +50,16 @@ const CorrectionField = ({
   };
 
   // useEffect(() => {
-    
-  
-  
+
+
+
   //   setNeedChecking(currentData?.Need_Checking)
-   
+
   // }, [currentIndex])
-  
-  
+
+
   // useEffect(() => {
-    //   const PRIMARY = currentData?.PRIMARY;
+  //   const PRIMARY = currentData?.PRIMARY;
   //   const Primary_Key = currentData?.DATA?.Primary_Key;
   //   // When filteredData or PRIMARY changes, update the input values
   //   const initialValues = currentData.DATA.reduce((acc, dataItem) => {
@@ -108,24 +109,26 @@ const CorrectionField = ({
     };
 
     processTemplateData();
-  }, [dataRow, currentData,currIndex]);
+  }, [dataRow, currentData, currIndex]);
 
   useEffect(() => {
     setVisitedCount(0);
     setVisitedRows({});
   }, []);
 
-  useEffect(() => {
-    const handleAltSKey = (e) => {
-      if (e.altKey && e.key.toLowerCase() === "s") {
-        e.preventDefault(); // Prevents browser shortcuts (if any)
-        document.getElementById("update").click();
-      }
-    };
+  // useEffect(() => {
+  //   const handleAltSKey = (e) => {
+  //     if (e.altKey && e.key.toLowerCase() === "s") {
+  //       e.preventDefault(); // Prevents browser shortcuts (if any)
+  //       document.getElementById("update").click();
+  //     }
+  //   };
 
-    document.addEventListener("keydown", handleAltSKey);
-    return () => document.removeEventListener("keydown", handleAltSKey);
-  }, []);
+  //   document.addEventListener("keydown", handleAltSKey);
+  //   return () => document.removeEventListener("keydown", handleAltSKey);
+  // }, []);
+
+
   useEffect(() => {
     handleVisit(0);
   }, []);
@@ -170,6 +173,18 @@ const CorrectionField = ({
 
   console.log(subData)
 
+
+  function debounce(func, delay) {
+    let timer;
+
+    return function (...args) {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        func.apply(this, args);
+      }, delay);
+    };
+  }
+
   const onUpdateHandler = async () => {
     if (isUpdatingRef.current) return;
     isUpdatingRef.current = true;
@@ -181,7 +196,7 @@ const CorrectionField = ({
           id: dataItem.id,
           Column_Name: dataItem.Column_Name,
           Corrected: inputValue[dataItem.Column_Name],
-          
+
         };
       });
       const filtered = mappedData.filter((item) => item.Corrected != null);
@@ -191,7 +206,7 @@ const CorrectionField = ({
         parentId: currentData?.parentId,
         taskId: taskId,
         errorDataId: currentData.id,
-        Need_Checking:needChecking
+        Need_Checking: needChecking
       };
       console.log(obj)
 
@@ -218,6 +233,38 @@ const CorrectionField = ({
     }
   };
 
+
+  const debounceSave = debounce(() => onUpdateHandler(), 100)
+
+
+
+
+  const keyBlockedRef = useRef(false);
+
+  useEffect(() => {
+    const handleAltSKey = (e) => {
+      if (loading) return; // Prevent save during data loading
+
+      if (e.altKey && e.key.toLowerCase() === "s") {
+        e.preventDefault();
+
+        if (keyBlockedRef.current) return; // Throttle repeated trigger
+        keyBlockedRef.current = true;
+
+        onUpdateHandler()
+
+        setTimeout(() => {
+          keyBlockedRef.current = false;
+        }, 200);
+      }
+    };
+
+    document.addEventListener("keydown", handleAltSKey);
+    return () => {
+      document.removeEventListener("keydown", handleAltSKey);
+    };
+  }, [ onUpdateHandler, loading]);
+
   console.log(needChecking);
 
   const errorData = updatedeData?.map((dataItem, index) => {
@@ -243,7 +290,7 @@ const CorrectionField = ({
             type="text"
             className="w-full border rounded-xl py-1 px-2 shadow"
             // value={inputValue[key] ?inputValue[key]:dataItem?.Corrected}
-           value={inputValue[key] ?? dataItem?.Corrected ?? dataItem?.File_1_data}
+            value={inputValue[key] ?? dataItem?.Corrected ?? dataItem?.File_1_data}
             placeholder={dataItem?.Column_Name}
             onChange={(e) => {
               const input = e.target.value.toUpperCase(); // Convert input to uppercase
@@ -313,7 +360,7 @@ const CorrectionField = ({
         <button
           className="px-6 py-2 bg-teal-600 rounded-lg text-white flex items-center justify-center min-w-[120px] h-[40px]"
           disabled={isLoading}
-          onClick={onUpdateHandler}
+          onClick={debounceSave}
           id="update"
         >
           {isLoading && (

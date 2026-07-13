@@ -110,6 +110,8 @@ const QuestionDataEntrySection = ({
       [key]: filteredValue, // ✅ only allowed chars are stored
     }));
 
+    console.log(editableData)
+
     setEditedData((prev) => {
       const updatedData = [...prev];
       const existingIndex = updatedData.findIndex(

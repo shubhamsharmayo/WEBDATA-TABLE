@@ -253,7 +253,7 @@ WHERE
       }
     );
 
-    // console.log(joinedData);
+    console.log(joinedData);
     // console.log(updatedData);
 
     const results = validateUpdatedData(joinedData, updatedData);

@@ -25,6 +25,7 @@ const FormDataEntrySection = ({
             columnName
           );
           const data = response.data;
+          console.log(response)
           setImageData(data[0]);
         } catch (error) {
           console.log(error);
