@@ -278,7 +278,7 @@ const UserCorrectionData = () => {
         // Ignore outdated responses
         if (fetchId !== fetchIdRef.current) return;
 
-        setNeedChecking(response?.data?.mainData?.Need_Checking !== 0);
+        setNeedChecking(response?.data?.mainData?.Need_Checking==0?false:true);
         console.log(response?.data);
 
         setCurrentData(response?.data?.mainData);
